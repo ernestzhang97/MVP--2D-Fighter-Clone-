@@ -3,6 +3,10 @@ import Phaser from 'phaser'
 const { KeyCodes } = Phaser.Input.Keyboard;
 const KEY_BINDINGS = {
   jump: KeyCodes.SPACE,
+  left: KeyCodes.LEFT,
+  right: KeyCodes.RIGHT,
+  down: KeyCodes.DOWN,
+  hit1: KeyCodes.Z
 }
 export default class Player {
 
@@ -11,26 +15,37 @@ export default class Player {
     this.scene = scene
 
     this.texture = config.key
-    this.active = config.isActivePlayer
-    this.x = 300;
-    this.y = 1000;
+    // this.active = config.isActivePlayer
+    this.x = config.x;
+    this.y = config.y;
+    this.flip = config.flip;
 
     //create character
     this.createBody()
     this.createAnims()
     this.playerControl()
-
   }
 
   createBody() {
-    this.fighter = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
-    this.fighter.flipX = true;
-    this.fighter.setScale(5);
+    const fighter = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
+    .setCollideWorldBounds(true)
+
+    if (this.flip) {
+      fighter.flipX = true;
+    }
+    // this.fighter.setGravityY(100);
+    // this.scene.physics.add.collider(this.fighter, this.scene)
+    fighter.setScale(5);
+    // fighter.setSize(1400, 1000)
+    fighter.enableBody = true;
+    fighter.class = this
+    fighter.body.setSize(fighter.width, fighter.height, true)
+    this.fighter = fighter
   }
 
   createAnims() {
     let atlasTextures = this.scene.textures.get(`${this.texture}`)
-    console.log(atlasTextures)
+    // console.log(atlasTextures)
     this.scene.anims.create({
       key: 'Idle',
       frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
@@ -42,111 +57,78 @@ export default class Player {
       frameRate: 10,
       repeat: -1
     })
+    this.scene.anims.create({
+      key: 'Move Forward',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 5,
+        prefix: 'Movement/Forward/',
+        suffix: '.png'
+      }),
+      frameRate: 5
+    })
+    this.scene.anims.create({
+      key: 'Move Back',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 7,
+        prefix: 'Movement/Backwards/',
+        suffix: '.png'
+      }),
+      frameRate: 7
+    })
+    this.scene.anims.create({
+      key: 'Crouch',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 1,
+        prefix: 'Crouch/',
+        suffix: '.png'
+      }),
+      frameRate: 1
+    })
+    this.scene.anims.create({
+      key: 'Hit1',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 3,
+        prefix: 'Moveset/Hit1/',
+        suffix: '.png'
+      }),
+      frameRate: 10
+    })
 
   }
 
   playerControl() {
-    this.fighter.anims.play('Idle')
+    this.KEYS = this.scene.input.keyboard.addKeys(KEY_BINDINGS)
+    // console.log(this.KEYS)
   }
 
+  // movesets() {
+
+  // }
+
+  update() {
+    // this.fighter.body.offset.x = 0;
+    // this.fighter.body.offset.y = 0;
+      if (this.KEYS.left.isDown) {
+        this.fighter.setVelocityX(-200)
+        !this.scene.isPlaying && this.fighter.anims.play('Move Back', true)
+      } else if (this.KEYS.right.isDown) {
+        this.fighter.setVelocityX(200)
+        !this.scene.isPlaying && this.fighter.anims.play('Move Forward', true)
+      } else if (this.KEYS.down.isDown) {
+        this.fighter.body.velocity.x = 0;
+        !this.scene.isPlaying && this.fighter.anims.play('Crouch', true)
+      } else if (this.KEYS.hit1.isDown) {
+        this.fighter.body.velocity.x = 0;
+        !this.scene.isPlaying && this.fighter.anims.play('Hit1', true)
+      }
+      else {
+        this.fighter.setVelocityX(0);
+        this.fighter.setVelocityY(0);
+        !this.scene.isPlaying && this.fighter.anims.play('Idle', true)
+      }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// export default class Player extends Physics.Arcade.Sprite {
-
-//  private keyW: Phaser.Input.Keyboard.Key;
-//  private keyA: Phaser.Input.Keyboard.Key;
-//  private keyS: Phaser.Input.Keyboard.Key;
-//  private keyD: Phaser.Input.Keyboard.Key;
-
-  // constructor(scene, x, y) {
-  //   super('Map', x, y)
-
-  //   this.scene = scene;
-  //   this.scene.add.existing(this);
-  //   this.scene.physics.add.existing(this);
-  //   this.getBody().setBoundsRectangle(this);
-
-  //   this.keyW = this.scene.input.keyboard.addKey('W');
-  //   this.keyA = this.scene.input.keyboard.addKey('A');
-  //   this.keyS = this.scene.input.keyboard.addKey('S');
-  //   this.keyD = this.scene.input.keyboard.addKey('D');
-
-  //   this.getBody().setSize(200, 200);
-  //   this.getBody().setOffset(8, 0);
-
-  // }
-
-  // create() {
-  //   let atlasTexture = this.textures.get('fighter')
-  //     let frames = atlasTexture.getFrameNames();
-  //     console.log(frames)
-
-  //     this.anims.create({
-  //       key: 'Idle',
-  //       frames: this.anims.generateFrameNames('fighter', {
-  //         start: 1,
-  //         end: 10,
-  //         prefix: 'Idle/',
-  //         suffix:'.png'
-  //       }),
-  //       frameRate: 10,
-  //       repeat: -1
-  //     })
-
-  //     this.fighter1 = this.add.sprite(100, 100, 'fighter')
-  //     this.fighter1.flipX = true;
-  //     this.fighter1.play('Idle')
-  // }
-
-  // update() {
-  //   this.getBody().setVelocity(0);
-
-  //   if(this.keyW.isDown) {
-  //     this.body.velocity.y = -110
-  //   }
-  //   if(this.keyA.isDown) {
-  //     this.body.velocity.x = -110;
-  //     this.getBody().setOffset(48,15)
-  //   }
-  //   if(this.keyS.isDown) {
-  //     this.body.velocity.y = -110;
-  //   }
-  //   if(this.keyD.isDown) {
-  //     this.body.velocity.x = -110;
-  //     this.getBody().setOffset(15, 15)
-  //   }
-  // }
-
-  // getBody() {
-  //   let atlasTexture = this.textures.get('fighter')
-  //     let frames = atlasTexture.getFrameNames();
-  //     console.log(frames)
-
-  //     this.anims.create({
-  //       key: 'Idle',
-  //       frames: this.anims.generateFrameNames('fighter', {
-  //         start: 1,
-  //         end: 10,
-  //         prefix: 'Idle/',
-  //         suffix:'.png'
-  //       }),
-  //       frameRate: 10,
-  //       repeat: -1
-  //     })
-
-  //     this.fighter1 = this.add.sprite(100, 100, 'fighter')
-  //     this.fighter1.flipX = true;
-
-  // }
-// }
