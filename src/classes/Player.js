@@ -29,17 +29,18 @@ export default class Player {
   createBody() {
     const fighter = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
     .setCollideWorldBounds(true)
+    .setScale(5)
 
     if (this.flip) {
       fighter.flipX = true;
     }
-    // this.fighter.setGravityY(100);
-    // this.scene.physics.add.collider(this.fighter, this.scene)
-    fighter.setScale(5);
-    // fighter.setSize(1400, 1000)
+    fighter.body.setSize(fighter.width, (fighter.height + 20), true)
+    fighter.body.setOffset(0, 5)
+    fighter.setGravityY(100);
+
     fighter.enableBody = true;
     fighter.class = this
-    fighter.body.setSize(fighter.width, fighter.height, true)
+    fighter.refreshBody()
     this.fighter = fighter
   }
 
@@ -65,7 +66,7 @@ export default class Player {
         prefix: 'Movement/Forward/',
         suffix: '.png'
       }),
-      frameRate: 5
+      frameRate: 7
     })
     this.scene.anims.create({
       key: 'Move Back',
@@ -75,7 +76,7 @@ export default class Player {
         prefix: 'Movement/Backwards/',
         suffix: '.png'
       }),
-      frameRate: 7
+      frameRate: 9
     })
     this.scene.anims.create({
       key: 'Crouch',
@@ -97,7 +98,26 @@ export default class Player {
       }),
       frameRate: 10
     })
-
+    this.scene.anims.create({
+      key: 'Hit2',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 8,
+        prefix: 'Moveset/Hit2/',
+        suffix: '.png'
+      }),
+      frameRate: 10
+    })
+    this.scene.anims.create({
+      key: 'Jump',
+      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+        start: 1,
+        end: 13,
+        prefix: 'Jump/',
+        suffix: '.png'
+      }),
+      frameRate: 12
+    })
   }
 
   playerControl() {
@@ -124,6 +144,8 @@ export default class Player {
       } else if (this.KEYS.hit1.isDown) {
         this.fighter.body.velocity.x = 0;
         !this.scene.isPlaying && this.fighter.anims.play('Hit1', true)
+      } else if (this.KEYS.jump.isDown ) {
+        !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
       }
       else {
         this.fighter.setVelocityX(0);

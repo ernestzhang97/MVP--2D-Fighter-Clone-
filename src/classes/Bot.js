@@ -33,6 +33,9 @@ export default class Bot {
       bot.setScale(5);
       bot.enableBody = true;
       bot.body.setSize(bot.width, bot.height, true)
+      bot.refreshBody();
+      bot.body.setOffset(12, 5)
+
       this.bot = bot
     }
 
