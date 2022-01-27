@@ -103,7 +103,7 @@ export default class Bot {
       !this.isPlaying && this.bot.anims.play('HurtCombo', true)
 
       this.bot.once('animationupdate', (anim, frames, sprite, frameKey) => {
-        if (frames.index === 2) {
+        if (frames.index === 10) {
           this.scene.physics.world.disable(this.bot)
         }
         if (frames.index === 16) {
