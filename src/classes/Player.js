@@ -173,16 +173,13 @@ export default class Player {
         this.fighter.on('animationcomplete', () => {this.fighterCombo = '1'})
       } else if (this.KEYS.jump.isDown ) {
         !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
-      }
-      else if (this.KEYS.hit2.isDown && this.fighterCombo.length === 1) {
+      } else if (this.KEYS.hit2.isDown && this.fighterCombo.length === 1) {
         !this.isPlaying && this.fighter.anims.play('Hit2', true)
         this.fighter.on('animationcomplete', ()=> {this.fighterCombo = '12'})
-      }
-      else if (this.KEYS.hit3.isDown && this.fighterCombo.length === 2) {
+      } else if (this.KEYS.hit3.isDown && this.fighterCombo.length === 2) {
         !this.isPlaying && this.fighter.anims.play('Hit3', true)
         this.fighter.on('animationcomplete', ()=> {this.fighterCombo = ''})
-      }
-      else {
+      } else {
         this.fighter.setVelocityX(0);
         this.fighter.setVelocityY(0);
         !this.scene.isPlaying && this.fighter.anims.play('Idle', true)
