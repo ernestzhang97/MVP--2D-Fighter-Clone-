@@ -148,16 +148,10 @@ export default class Player {
 
   playerControl() {
     this.KEYS = this.scene.input.keyboard.addKeys(KEY_BINDINGS)
-    // console.log(this.KEYS)
+
   }
 
-  // movesets() {
-
-  // }
-
   update() {
-    // this.fighter.body.offset.x = 0;
-    // this.fighter.body.offset.y = 0;
       if (this.KEYS.left.isDown) {
         this.fighter.setVelocityX(-200)
         !this.scene.isPlaying && this.fighter.anims.play('Move Back', true)

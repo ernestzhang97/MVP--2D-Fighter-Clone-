@@ -99,12 +99,12 @@ export default class Map extends Phaser.Scene {
     }
   }
 
-  hitEnemy() {
-    // console.log('hi')
-  }
-
   handlingCollision() {
-    this.physics.add.overlap(this.fighters, this.fighters, () => {console.log('hi')})
+    console.log(this.fighter2)
+    this.physics.add.overlap(this.fighters, this.fighters, () => {
+      this.fighter2.hit = true
+      this.fighter2.updateHealth()
+    })
     this.physics.add.collider(this.fighters, this.platform)
     this.physics.add.collider(this.fighters, this.platform)
   }

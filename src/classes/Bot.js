@@ -17,18 +17,15 @@ export default class Bot {
       this.createAnims()
 
       //initial state of character
-      // this.health = 100;
-      // this.hit = false;
-      // this.combo = false;
-      // console.log(this.health)
+      this.health = 100;
+      this.hit = false;
+      this.combo = false;
   }
 
     createBody() {
       const bot = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
                 .setCollideWorldBounds(true)
-                // .setInteractive(new Phaser.Geom.Rectangle(0, 0, 128, 128), null)
-      // this.bot.setGravityY(100);
-      // this.scene.physics.add.collider(this.bot, this.scene)
+
       bot.class = this;
       bot.setScale(5);
       bot.enableBody = true;
@@ -43,7 +40,7 @@ export default class Bot {
 
     createAnims() {
       let atlasTextures = this.scene.textures.get(`${this.texture}`)
-      // console.log(atlasTextures)
+
       this.scene.anims.create({
         key: 'Idle',
         frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
@@ -78,11 +75,30 @@ export default class Bot {
     }
 
     updateHealth() {
-      this.health = this.health - 1;
+      if(!this.hit && !this.isPlaying) {
+        this.bot.anims.play('Idle', true)
+      } else if (this.hit) {
+        this.bot.anims.play('Hurt1', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      } else if (this.hit && this.fighterCombo.length === 3) {
+        console.log('hi')
+        this.bot.anims.play('HurtCombo', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      }
     }
 
     update() {
-      this.bot.anims.play('Idle', true)
-      // this.updateHealth()
+      if(!this.hit && !this.isPlaying) {
+        this.bot.anims.play('Idle', true)
+      } else if (this.hit) {
+        this.bot.anims.play('Hurt1', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      } else if (this.hit && this.fighterCombo.length === 3) {
+        console.log('hi')
+        this.bot.anims.play('HurtCombo', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      } else {
+        this.bot.anims.play('Idle', true)
+      }
     }
   }
