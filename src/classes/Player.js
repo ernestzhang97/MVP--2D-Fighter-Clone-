@@ -30,23 +30,21 @@ export default class Player {
   }
 
   createBody() {
-    const fighter = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
+    this.fighter = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
     .setCollideWorldBounds(true)
     .setScale(5)
 
     if (this.flip) {
-      fighter.flipX = true;
+      this.fighter.flipX = true;
     }
-    fighter.body.setSize(fighter.width, (fighter.height + 20), true)
-    fighter.body.setOffset(0, 5)
-    // fighter.setGravityY(100);
+    this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+    // fighter.setGravity(1000)
 
-    fighter.enableBody = true;
-    fighter.class = this
-    fighter.refreshBody()
-    this.fighter = fighter
+    // this.scene.physics.world.disable(this.fighter)
+    this.fighter.class = this
+    this.fighter.refreshBody()
 
-    this.scene.fighters.add(fighter)
+    this.scene.fighters.add(this.fighter)
   }
 
   createAnims() {
@@ -105,33 +103,13 @@ export default class Player {
     })
     this.scene.anims.create({
       key: 'Hit2',
-      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
-        start: 1,
-        end: 8,
-        prefix: 'Moveset/Hit2/',
-        suffix: '.png'
-      }),
-      frameRate: 10
-    })
-    this.scene.anims.create({
-      key: 'Jump',
-      frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
-        start: 1,
-        end: 13,
-        prefix: 'Jump/',
-        suffix: '.png'
-      }),
-      frameRate: 12
-    })
-    this.scene.anims.create({
-      key: 'Hit2',
       frames: this.scene.anims.generateFrameNames('fighter', {
         start: 1,
         end: 8,
         prefix: 'Moveset/Hit2/',
         suffix: '.png'
       }),
-      frameRate: 1
+      frameRate: 10
     })
     this.scene.anims.create({
       key: 'Hit3',
@@ -143,12 +121,68 @@ export default class Player {
       }),
       frameRate: 16
     })
+  }
 
+  punch() {
+    !this.isPlaying && this.fighter.anims.play('Hit1', true)
+
+    this.fighter.once('animationupdate', (anim, frames, sprite, frameKey) => {
+      if (frames.index === 1) {
+        this.fighter.setCircle(10).setOffset(15,15)
+      }
+      if (frames.index === 2) {
+        this.scene.physics.world.enable(this.fighter)
+        this.fighter.setCircle(10).setOffset(80,20)
+      }
+    })
+
+    this.fighter.on('animationcomplete', () => {
+      this.fighterCombo = '1'
+      this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+    })
+  }
+
+  comboStart() {
+    this.fighter.once('animationstart', (anim, frames, sprite, frameKey) => {
+      if (frames.index === 1) {
+        this.scene.physics.world.enable(this.fighter)
+        this.fighter.setCircle(10).setOffset(80,20)
+      }
+    })
+
+    !this.isPlaying && this.fighter.anims.play('Hit2', true)
+
+    this.fighter.once('animationupdate', (anim, frames, sprite, frameKey) => {
+      if(frames.index === 4) {
+        this.fighter.setCircle(10).setOffset(80,60)
+      }
+      if(frames.index ===5) {
+        this.fighter.setCircle(10).setOffset(60,30)
+      }
+      if (frames.index === 6) {
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+      }
+    })
+
+    this.fighter.on('animationcomplete', ()=> {
+      this.fighterCombo = '12'
+    })
+  }
+
+  comboFull() {
+    !this.isPlaying && this.fighter.anims.play('Hit3', true)
+
+    this.fighter.once('animationupdate', (anim, frames, sprite, frameKey) => {
+      if(frames.index === 6) {
+        this.fighter.setCircle(10).setOffset(90,15)
+      }
+    })
+
+    this.fighter.on('animationcomplete', ()=> {this.fighterCombo = ''})
   }
 
   playerControl() {
     this.KEYS = this.scene.input.keyboard.addKeys(KEY_BINDINGS)
-
   }
 
   update() {
@@ -161,22 +195,34 @@ export default class Player {
       } else if (this.KEYS.down.isDown) {
         this.fighter.body.velocity.x = 0;
         !this.scene.isPlaying && this.fighter.anims.play('Crouch', true)
-      } else if (this.KEYS.hit1.isDown) {
+      } else if (this.KEYS.hit1.isDown ) {
         this.fighter.body.velocity.x = 0;
-        !this.isPlaying && this.fighter.anims.play('Hit1', true)
-        this.fighter.on('animationcomplete', () => {this.fighterCombo = '1'})
-      } else if (this.KEYS.jump.isDown ) {
-        !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
-      } else if (this.KEYS.hit2.isDown && this.fighterCombo.length === 1) {
-        !this.isPlaying && this.fighter.anims.play('Hit2', true)
-        this.fighter.on('animationcomplete', ()=> {this.fighterCombo = '12'})
-      } else if (this.KEYS.hit3.isDown && this.fighterCombo.length === 2) {
-        !this.isPlaying && this.fighter.anims.play('Hit3', true)
-        this.fighter.on('animationcomplete', ()=> {this.fighterCombo = ''})
+        this.punch()
+      } else if (this.KEYS.hit2.isDown) {
+        this.fighter.body.velocity.x = 0;
+        this.comboStart()
+      } else if (this.KEYS.hit3.isDown) {
+        this.fighter.body.velocity.x = 0;
+        this.comboFull()
       } else {
         this.fighter.setVelocityX(0);
         this.fighter.setVelocityY(0);
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
         !this.scene.isPlaying && this.fighter.anims.play('Idle', true)
       }
-  }
+    }
 }
+
+// this.scene.anims.create({
+//   key: 'Jump',
+//   frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
+//     start: 1,
+//     end: 13,
+//     prefix: 'Jump/',
+//     suffix: '.png'
+//   }),
+//   frameRate: 12
+// })
+// else if (this.KEYS.jump.isDown ) {
+//   !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
+// }

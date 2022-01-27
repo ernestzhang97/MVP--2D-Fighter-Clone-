@@ -15,11 +15,13 @@ export default class Bot {
       //create character
       this.createBody()
       this.createAnims()
+      this.onLose()
 
       //initial state of character
       this.health = 100;
       this.hit = false;
       this.combo = false;
+      this.lose = false;
 
       //create health bar
   }
@@ -27,16 +29,14 @@ export default class Bot {
     createBody() {
       const bot = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
                 .setCollideWorldBounds(true)
-
       bot.class = this;
       bot.setScale(5);
       bot.enableBody = true;
-      bot.body.setSize(bot.width, bot.height, true)
+      bot.body.setSize(50, 30, true)
       bot.refreshBody();
-      bot.body.setOffset(12, 5)
+      bot.body.setOffset(20, 25)
 
       this.bot = bot
-
       this.scene.fighters.add(bot)
     }
 
@@ -74,11 +74,24 @@ export default class Bot {
         }),
         frameRate:18
       })
+      this.scene.anims.create({
+        key:'Lose',
+        frames: this.scene.anims.generateFrameNames('fighter', {
+          start: 1,
+          end: 6,
+          prefix: 'Hurt/Lose/',
+          suffix:'.png'
+        }),
+        frameRate: 1
+      })
     }
 
     updateHealth() {
-     if (this.health > 0)
-      this.health = this.health - 1
+      if (this.health > 0) {
+       this.health = this.health - 0.2
+      } else {
+        this.lose = true;
+      }
     }
 
     animationComplete() {
@@ -86,16 +99,24 @@ export default class Bot {
       this.bot.anims.play('Idle', true)
     }
 
+    onLose() {
+      this.bot.anims.play('Lose', false)
+      this.bot.on('animationcomplete', ()=> {this.bot.anims.stop()})
+    }
+
     update() {
-      if(!this.hit && !this.isPlaying) {
-        this.bot.anims.play('Idle', true)
-      } else if (this.hit) {
-        this.bot.anims.play('Hurt1', true)
-        this.bot.on('animationcomplete', ()=> this.animationComplete())
-      } else if (this.hit && this.fighterCombo.length === 3) {
-        console.log('hi')
-        this.bot.anims.play('HurtCombo', true)
-        this.bot.on('animationcomplete', ()=> this.animationComplete())
+       if (this.health > 0 && !this.lose) {
+        if(!this.hit && !this.isPlaying) {
+          this.bot.anims.play('Idle', true)
+        } else if (this.hit) {
+          this.bot.anims.play('Hurt1', true)
+          this.bot.on('animationcomplete', ()=> this.animationComplete())
+        } else if (this.hit && this.fighterCombo.length === 3) {
+          this.bot.anims.play('HurtCombo', true)
+          this.bot.on('animationcomplete', ()=> this.animationComplete())
+        }
       }
     }
 }
+
+//this.scene.pause();

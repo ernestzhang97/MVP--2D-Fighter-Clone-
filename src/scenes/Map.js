@@ -31,6 +31,7 @@ export default class Map extends Phaser.Scene {
     this.physics.world.setBounds(0 , 0, window.innerWidth, window.innerHeight)
 
     this.fighters = this.add.group()
+    this.combo = this.add.group()
     //creating and displaying initial state of fighter
     this.createGround()
     this.createFighter()
@@ -94,7 +95,7 @@ export default class Map extends Phaser.Scene {
   }
 
   handlingCollision() {
-    console.log(this.fighter2)
+    // console.log(this.fighters.children.entries[1])
     this.physics.add.overlap(this.fighters, this.fighters, () => {
       this.fighter2.hit = true
       this.fighter2.updateHealth()
@@ -121,7 +122,14 @@ export default class Map extends Phaser.Scene {
 
   update() {
     this.fighter1.update();
-    this.fighter2.update();
+
+    if(this.fighter2.health > 0) {
+      this.fighter2.update();
+    }
+
+    if(this.fighter2.health === 0 && this.fighter2.lose) {
+      this.fighter2.onLose()
+    }
 
     if (this.fighter2.hit) {
       this.setValue(this.fighter2.health, 100)
