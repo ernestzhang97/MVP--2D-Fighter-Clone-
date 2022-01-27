@@ -145,7 +145,7 @@ export default class Map extends Phaser.Scene {
       this.setValue(this.fighter2.health, 100)
     }
 
-    if(this.fighter1.knockDown && this.fighter2.combo) {
+    if(this.fighter1.knockDown && this.fighter2.combo && this.fighter2.health > 0) {
       this.fighter2.knockDown()
     }
   }

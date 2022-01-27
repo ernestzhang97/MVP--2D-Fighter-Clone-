@@ -257,16 +257,3 @@ export default class Player {
   }
 }
 
-// this.scene.anims.create({
-//   key: 'Jump',
-//   frames: this.scene.anims.generateFrameNames(`${this.texture}`, {
-//     start: 1,
-//     end: 13,
-//     prefix: 'Jump/',
-//     suffix: '.png'
-//   }),
-//   frameRate: 12
-// })
-// else if (this.KEYS.jump.isDown ) {
-//   !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
-// }

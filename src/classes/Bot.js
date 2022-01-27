@@ -96,7 +96,6 @@ export default class Bot {
     animationComplete() {
       this.scene.physics.world.enable(this.bot)
       this.hit = false;
-      this.bot.anims.play('Idle', true)
     }
 
     knockDown() {
@@ -112,7 +111,6 @@ export default class Bot {
       })
 
       this.bot.once('animationcomplete', ()=> {
-
         this.combo = false;
         this.animationComplete()
       })
