@@ -6,7 +6,9 @@ const KEY_BINDINGS = {
   left: KeyCodes.LEFT,
   right: KeyCodes.RIGHT,
   down: KeyCodes.DOWN,
-  hit1: KeyCodes.Z
+  hit1: KeyCodes.Z,
+  hit2: KeyCodes.X,
+  hit3: KeyCodes.C
 }
 export default class Player {
 
@@ -19,6 +21,7 @@ export default class Player {
     this.x = config.x;
     this.y = config.y;
     this.flip = config.flip;
+    this.fighterCombo = '';
 
     //create character
     this.createBody()
@@ -166,9 +169,18 @@ export default class Player {
         !this.scene.isPlaying && this.fighter.anims.play('Crouch', true)
       } else if (this.KEYS.hit1.isDown) {
         this.fighter.body.velocity.x = 0;
-        !this.scene.isPlaying && this.fighter.anims.play('Hit1', true)
+        !this.isPlaying && this.fighter.anims.play('Hit1', true)
+        this.fighter.on('animationcomplete', () => {this.fighterCombo = '1'})
       } else if (this.KEYS.jump.isDown ) {
         !this.scene.isPlaying && this.fighter.anims.play('Jump', true)
+      }
+      else if (this.KEYS.hit2.isDown && this.fighterCombo.length === 1) {
+        !this.isPlaying && this.fighter.anims.play('Hit2', true)
+        this.fighter.on('animationcomplete', ()=> {this.fighterCombo = '12'})
+      }
+      else if (this.KEYS.hit3.isDown && this.fighterCombo.length === 2) {
+        !this.isPlaying && this.fighter.anims.play('Hit3', true)
+        this.fighter.on('animationcomplete', ()=> {this.fighterCombo = ''})
       }
       else {
         this.fighter.setVelocityX(0);
