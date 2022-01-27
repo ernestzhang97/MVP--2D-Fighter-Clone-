@@ -37,6 +37,8 @@ export default class Bot {
       bot.body.setOffset(12, 5)
 
       this.bot = bot
+      
+      this.scene.fighters.add(bot)
     }
 
     createAnims() {

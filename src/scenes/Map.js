@@ -30,13 +30,14 @@ export default class Map extends Phaser.Scene {
 
     this.physics.world.setBounds(0 , 0, window.innerWidth, window.innerHeight)
 
+    this.fighters = this.add.group()
     //creating and displaying initial state of fighter
     this.createGround()
     this.createFighter()
     this.createBot()
     this.createAudio()
-
     this.handlingCollision();
+
 
     let playerBar = this.healthBar(140, 100, 0xff0000)
     this.setValue(playerBar, 100);
@@ -75,9 +76,6 @@ export default class Map extends Phaser.Scene {
       y: 925,
       flip: true
     })
-
-    this.physics.world.enable(this.fighter1)
-    // console.log(this.fighter1)
   }
 
   createBot() {
@@ -87,8 +85,6 @@ export default class Map extends Phaser.Scene {
       x: 1800,
       y: 925,
     })
-
-    this.physics.world.enable(this.fighter2)
   }
 
   createAudio() {
@@ -108,16 +104,15 @@ export default class Map extends Phaser.Scene {
   }
 
   handlingCollision() {
-    this.physics.add.collider(this.fighter1, this.fighter2, (x, y) => console.log('hi'), null, this)
-    this.physics.add.collider(this.fighter1, this.platform)
-    this.physics.add.collider(this.fighter2, this.platform)
+    this.physics.add.overlap(this.fighters, this.fighters, () => {console.log('hi')})
+    this.physics.add.collider(this.fighters, this.platform)
+    this.physics.add.collider(this.fighters, this.platform)
   }
 
   healthBar(x , y, color) {
     let bar = this.add.graphics()
 
     bar.fillStyle(color, 1);
-
     bar.fillRect(0, 0, 600, 50);
 
     bar.x = x
@@ -133,7 +128,5 @@ export default class Map extends Phaser.Scene {
   update() {
     this.fighter1.update();
     this.fighter2.update();
-
-    // this.physics.add.collider(this.fighter1.fighter, this.fighter2.fighter, () => console.log('hi'), null, this)
   }
 }

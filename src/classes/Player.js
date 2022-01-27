@@ -36,12 +36,14 @@ export default class Player {
     }
     fighter.body.setSize(fighter.width, (fighter.height + 20), true)
     fighter.body.setOffset(0, 5)
-    fighter.setGravityY(100);
+    // fighter.setGravityY(100);
 
     fighter.enableBody = true;
     fighter.class = this
     fighter.refreshBody()
     this.fighter = fighter
+
+    this.scene.fighters.add(fighter)
   }
 
   createAnims() {
