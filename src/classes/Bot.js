@@ -20,6 +20,8 @@ export default class Bot {
       this.health = 100;
       this.hit = false;
       this.combo = false;
+
+      //create health bar
   }
 
     createBody() {
@@ -75,16 +77,13 @@ export default class Bot {
     }
 
     updateHealth() {
-      if(!this.hit && !this.isPlaying) {
-        this.bot.anims.play('Idle', true)
-      } else if (this.hit) {
-        this.bot.anims.play('Hurt1', true)
-        this.bot.on('animationcomplete', ()=> this.animationComplete())
-      } else if (this.hit && this.fighterCombo.length === 3) {
-        console.log('hi')
-        this.bot.anims.play('HurtCombo', true)
-        this.bot.on('animationcomplete', ()=> this.animationComplete())
-      }
+     if (this.health > 0)
+      this.health = this.health - 1
+    }
+
+    animationComplete() {
+      this.hit = false;
+      this.bot.anims.play('Idle', true)
     }
 
     update() {
@@ -97,8 +96,6 @@ export default class Bot {
         console.log('hi')
         this.bot.anims.play('HurtCombo', true)
         this.bot.on('animationcomplete', ()=> this.animationComplete())
-      } else {
-        this.bot.anims.play('Idle', true)
       }
     }
-  }
+}

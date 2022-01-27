@@ -40,23 +40,17 @@ export default class Map extends Phaser.Scene {
 
 
     let playerBar = this.healthBar(140, 100, 0xff0000)
-    this.setValue(playerBar, 100);
+    this.setValue(100, 100)
     this.add.text(140, 150, 'Player 1', {fontSize: '34px'})
 
     let botBar = this.healthBar(1400, 100, 0x3d85c6)
-    this.setValue(botBar, 100);
+    this.setValue(100, 100)
     this.add.text(1840, 150, 'Player 2', {fontSize: '34px'})
-
     this.add.text(1050, 80, '∞', {fontSize: '100px'})
 
     //initialize character state
     this.fighterHealth = 100;
     this.botHealth = 100;
-    this.fighterHit = false;
-    this.botBlock = false;
-    this.botHit = false;
-    this.botCombo = false;
-
   }
 
   createGround() {
@@ -110,23 +104,27 @@ export default class Map extends Phaser.Scene {
   }
 
   healthBar(x , y, color) {
-    let bar = this.add.graphics()
+    this.bar = this.add.graphics()
+    this.bar.setDepth(100)
+    this.bar.fillStyle(color, 1);
+    this.bar.fillRect(0, 0, 600, 50);
 
-    bar.fillStyle(color, 1);
-    bar.fillRect(0, 0, 600, 50);
+    this.bar.x = x
+    this.bar.y = y
 
-    bar.x = x
-    bar.y = y
-
-    return bar
+    return this.bar
   }
 
-  setValue(bar, percentage) {
-    bar.scaleX = percentage / 100;
+  setValue(current, max) {
+    this.bar.scaleX = current / max;
   }
 
   update() {
     this.fighter1.update();
     this.fighter2.update();
+
+    if (this.fighter2.hit) {
+      this.setValue(this.fighter2.health, 100)
+    }
   }
 }
