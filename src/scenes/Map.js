@@ -120,19 +120,28 @@ export default class Map extends Phaser.Scene {
     this.bar.scaleX = current / max;
   }
 
+  victory() {
+    this.fighter1.win = true;
+    this.fighter1.victoryPose()
+    this.fighter2.onLose()
+    this.add.text(500, 500, 'Player 1 Wins', {fontSize: '100px'})
+  }
+
   update() {
-    this.fighter1.update();
+
+    if(this.fighter2.health === 0 && !this.fighter2.lose) {
+      this.victory()
+    }
 
     if(this.fighter2.health > 0) {
+      this.fighter1.update();
       this.fighter2.update();
     }
 
-    if(this.fighter2.health === 0 && this.fighter2.lose) {
-      this.fighter2.onLose()
-    }
 
     if (this.fighter2.hit) {
       this.setValue(this.fighter2.health, 100)
     }
+
   }
 }

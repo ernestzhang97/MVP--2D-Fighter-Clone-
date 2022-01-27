@@ -27,6 +27,8 @@ export default class Player {
     this.createBody()
     this.createAnims()
     this.playerControl()
+
+    this.win = false;
   }
 
   createBody() {
@@ -121,6 +123,16 @@ export default class Player {
       }),
       frameRate: 16
     })
+    this.scene.anims.create({
+      key: 'Win',
+      frames: this.scene.anims.generateFrameNames('fighter', {
+        start: 1,
+        end: 17,
+        prefix: 'Victory/',
+        suffix: '.png'
+      }),
+      frameRate: 10
+    })
   }
 
   punch() {
@@ -185,32 +197,40 @@ export default class Player {
     this.KEYS = this.scene.input.keyboard.addKeys(KEY_BINDINGS)
   }
 
+  victoryPose() {
+    setTimeout(
+      () => { !this.scene.isPlaying && this.fighter.anims.play('Win', false)}, 8000
+    )
+
+    this.fighter.on('animationcomplete', () => {this.win = false})
+  }
+
   update() {
       if (this.KEYS.left.isDown) {
-        this.fighter.setVelocityX(-200)
+        this.fighter.setVelocityX(-400)
         !this.scene.isPlaying && this.fighter.anims.play('Move Back', true)
       } else if (this.KEYS.right.isDown) {
-        this.fighter.setVelocityX(200)
+        this.fighter.setVelocityX(400)
         !this.scene.isPlaying && this.fighter.anims.play('Move Forward', true)
       } else if (this.KEYS.down.isDown) {
         this.fighter.body.velocity.x = 0;
         !this.scene.isPlaying && this.fighter.anims.play('Crouch', true)
-      } else if (this.KEYS.hit1.isDown ) {
+      } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 0 ) {
         this.fighter.body.velocity.x = 0;
         this.punch()
-      } else if (this.KEYS.hit2.isDown) {
+      } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 1) {
         this.fighter.body.velocity.x = 0;
         this.comboStart()
-      } else if (this.KEYS.hit3.isDown) {
+      } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 2) {
         this.fighter.body.velocity.x = 0;
         this.comboFull()
-      } else {
+      }  else {
         this.fighter.setVelocityX(0);
         this.fighter.setVelocityY(0);
         this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
         !this.scene.isPlaying && this.fighter.anims.play('Idle', true)
       }
-    }
+  }
 }
 
 // this.scene.anims.create({

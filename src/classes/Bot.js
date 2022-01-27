@@ -15,7 +15,6 @@ export default class Bot {
       //create character
       this.createBody()
       this.createAnims()
-      this.onLose()
 
       //initial state of character
       this.health = 100;
@@ -82,15 +81,17 @@ export default class Bot {
           prefix: 'Hurt/Lose/',
           suffix:'.png'
         }),
-        frameRate: 1
+        frameRate: 0.8
       })
     }
 
     updateHealth() {
       if (this.health > 0) {
-       this.health = this.health - 0.2
-      } else {
-        this.lose = true;
+       this.health = this.health - 0.3
+      }
+
+      if (this.health < 1 && this.health > 0) {
+        this.health = 0
       }
     }
 
@@ -100,23 +101,30 @@ export default class Bot {
     }
 
     onLose() {
+      this.bot.x = 1800
+      this.bot.y = 940
       this.bot.anims.play('Lose', false)
-      this.bot.on('animationcomplete', ()=> {this.bot.anims.stop()})
+      this.lose = true;
+      this.bot.on('animationcomplete', ()=> {this.bot.destroy(true)})
     }
 
     update() {
-       if (this.health > 0 && !this.lose) {
-        if(!this.hit && !this.isPlaying) {
-          this.bot.anims.play('Idle', true)
-        } else if (this.hit) {
-          this.bot.anims.play('Hurt1', true)
-          this.bot.on('animationcomplete', ()=> this.animationComplete())
-        } else if (this.hit && this.fighterCombo.length === 3) {
-          this.bot.anims.play('HurtCombo', true)
-          this.bot.on('animationcomplete', ()=> this.animationComplete())
-        }
+      // if(this.health === 0 && !this.lose) {
+      //   this.onLose()
+      // }
+
+      if (this.health > 0 && !this.lose) {
+      if(!this.hit && !this.isPlaying) {
+        this.bot.anims.play('Idle', true)
+      } else if (this.hit) {
+        this.bot.anims.play('Hurt1', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      } else if (this.hit && this.fighterCombo.length === 3) {
+        this.bot.anims.play('HurtCombo', true)
+        this.bot.on('animationcomplete', ()=> this.animationComplete())
       }
     }
+  }
 }
 
 //this.scene.pause();
