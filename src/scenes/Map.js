@@ -99,6 +99,9 @@ export default class Map extends Phaser.Scene {
     this.physics.add.overlap(this.fighters, this.fighters, () => {
       this.fighter2.hit = true
       this.fighter2.updateHealth()
+      if (this.fighter1.fighterCombo.length === 2) {
+        this.fighter2.combo = true;
+      }
     })
     this.physics.add.collider(this.fighters, this.platform)
     this.physics.add.collider(this.fighters, this.platform)
@@ -138,10 +141,12 @@ export default class Map extends Phaser.Scene {
       this.fighter2.update();
     }
 
-
     if (this.fighter2.hit) {
       this.setValue(this.fighter2.health, 100)
     }
 
+    if(this.fighter1.knockDown && this.fighter2.combo) {
+      this.fighter2.knockDown()
+    }
   }
 }

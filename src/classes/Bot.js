@@ -26,17 +26,15 @@ export default class Bot {
   }
 
     createBody() {
-      const bot = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
+      this.bot = this.scene.physics.add.sprite(this.x, this.y, `${this.texture}`)
                 .setCollideWorldBounds(true)
-      bot.class = this;
-      bot.setScale(5);
-      bot.enableBody = true;
-      bot.body.setSize(50, 30, true)
-      bot.refreshBody();
-      bot.body.setOffset(20, 25)
+      this.bot.setScale(5);
+      this.scene.physics.world.enable(this.bot)
+      this.bot.body.setSize(50, 30, true)
+      this.bot.refreshBody();
+      this.bot.body.setOffset(20, 25)
 
-      this.bot = bot
-      this.scene.fighters.add(bot)
+      this.scene.fighters.add(this.bot)
     }
 
     createAnims() {
@@ -71,7 +69,7 @@ export default class Bot {
           prefix: 'Hurt/HitCombo/',
           suffix: '.png'
         }),
-        frameRate:18
+        frameRate: 10
       })
       this.scene.anims.create({
         key:'Lose',
@@ -87,7 +85,7 @@ export default class Bot {
 
     updateHealth() {
       if (this.health > 0) {
-       this.health = this.health - 0.3
+       this.health = this.health - 0.1
       }
 
       if (this.health < 1 && this.health > 0) {
@@ -96,8 +94,28 @@ export default class Bot {
     }
 
     animationComplete() {
+      this.scene.physics.world.enable(this.bot)
       this.hit = false;
       this.bot.anims.play('Idle', true)
+    }
+
+    knockDown() {
+      !this.isPlaying && this.bot.anims.play('HurtCombo', true)
+
+      this.bot.once('animationupdate', (anim, frames, sprite, frameKey) => {
+        if (frames.index === 2) {
+          this.scene.physics.world.disable(this.bot)
+        }
+        if (frames.index === 16) {
+          this.scene.physics.world.enable(this.bot)
+        }
+      })
+
+      this.bot.once('animationcomplete', ()=> {
+
+        this.combo = false;
+        this.animationComplete()
+      })
     }
 
     onLose() {
@@ -109,22 +127,15 @@ export default class Bot {
     }
 
     update() {
-      // if(this.health === 0 && !this.lose) {
-      //   this.onLose()
-      // }
-
       if (this.health > 0 && !this.lose) {
-      if(!this.hit && !this.isPlaying) {
-        this.bot.anims.play('Idle', true)
-      } else if (this.hit) {
+      if (this.hit && !this.combo) {
+        this.scene.physics.world.enable(this.bot)
         this.bot.anims.play('Hurt1', true)
         this.bot.on('animationcomplete', ()=> this.animationComplete())
-      } else if (this.hit && this.fighterCombo.length === 3) {
-        this.bot.anims.play('HurtCombo', true)
-        this.bot.on('animationcomplete', ()=> this.animationComplete())
+      } else if (!this.hit && !this.isPlaying) {
+        this.scene.physics.world.enable(this.bot)
+        this.bot.anims.play('Idle', true)
       }
     }
   }
 }
-
-//this.scene.pause();

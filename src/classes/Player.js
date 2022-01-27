@@ -8,7 +8,8 @@ const KEY_BINDINGS = {
   down: KeyCodes.DOWN,
   hit1: KeyCodes.Z,
   hit2: KeyCodes.X,
-  hit3: KeyCodes.C
+  hit3: KeyCodes.C,
+  block: KeyCodes.B
 }
 export default class Player {
 
@@ -22,6 +23,7 @@ export default class Player {
     this.y = config.y;
     this.flip = config.flip;
     this.fighterCombo = '';
+    this.knockDown = false;
 
     //create character
     this.createBody()
@@ -111,7 +113,7 @@ export default class Player {
         prefix: 'Moveset/Hit2/',
         suffix: '.png'
       }),
-      frameRate: 10
+      frameRate: 7
     })
     this.scene.anims.create({
       key: 'Hit3',
@@ -121,7 +123,7 @@ export default class Player {
         prefix: 'Moveset/Hit3/',
         suffix: '.png'
       }),
-      frameRate: 16
+      frameRate: 12
     })
     this.scene.anims.create({
       key: 'Win',
@@ -129,6 +131,16 @@ export default class Player {
         start: 1,
         end: 17,
         prefix: 'Victory/',
+        suffix: '.png'
+      }),
+      frameRate: 10
+    })
+    this.scene.anims.create({
+      key: 'Block',
+      frames: this.scene.anims.generateFrameNames('fighter', {
+        start: 1,
+        end: 4,
+        prefix: 'Block/Standing/',
         suffix: '.png'
       }),
       frameRate: 10
@@ -176,21 +188,30 @@ export default class Player {
       }
     })
 
-    this.fighter.on('animationcomplete', ()=> {
+    this.fighter.once('animationcomplete', ()=> {
       this.fighterCombo = '12'
     })
   }
 
   comboFull() {
+    if (this.fighterCombo.length === 2) {
+      this.knockDown = true;
+    }
     !this.isPlaying && this.fighter.anims.play('Hit3', true)
 
     this.fighter.once('animationupdate', (anim, frames, sprite, frameKey) => {
       if(frames.index === 6) {
         this.fighter.setCircle(10).setOffset(90,15)
       }
+      if (frames.index === 8) {
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+      }
     })
 
-    this.fighter.on('animationcomplete', ()=> {this.fighterCombo = ''})
+    this.fighter.once('animationcomplete', ()=> {
+      this.fighterCombo = ''
+      this.knockDown = false;
+    })
   }
 
   playerControl() {
@@ -202,7 +223,7 @@ export default class Player {
       () => { !this.scene.isPlaying && this.fighter.anims.play('Win', false)}, 8000
     )
 
-    this.fighter.on('animationcomplete', () => {this.win = false})
+    this.fighter.once('animationcomplete', () => {this.win = false})
   }
 
   update() {
@@ -215,13 +236,16 @@ export default class Player {
       } else if (this.KEYS.down.isDown) {
         this.fighter.body.velocity.x = 0;
         !this.scene.isPlaying && this.fighter.anims.play('Crouch', true)
+      } else if (this.KEYS.block.isDown) {
+        this.fighter.body.velocity.x = 0;
+        !this.scene.isPlaying && this.fighter.anims.play('Block', false)
       } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 0 ) {
         this.fighter.body.velocity.x = 0;
         this.punch()
-      } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 1) {
+      } else if ((this.KEYS.hit1.isDown && this.fighterCombo.length === 1) || this.KEYS.hit2.isDown) {
         this.fighter.body.velocity.x = 0;
         this.comboStart()
-      } else if (this.KEYS.hit1.isDown && this.fighterCombo.length === 2) {
+      } else if ((this.KEYS.hit1.isDown && this.fighterCombo.length === 2) || this.KEYS.hit3.isDown) {
         this.fighter.body.velocity.x = 0;
         this.comboFull()
       }  else {
