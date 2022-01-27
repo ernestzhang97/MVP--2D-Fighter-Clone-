@@ -124,7 +124,7 @@ export default class Map extends Phaser.Scene {
     this.fighter1.win = true;
     this.fighter1.victoryPose()
     this.fighter2.onLose()
-    this.add.text(500, 500, 'Player 1 Wins', {fontSize: '100px'})
+    this.add.text(700, 500, 'Player 1 Wins', {fontSize: '100px'})
   }
 
   update() {
