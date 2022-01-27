@@ -69,7 +69,7 @@ export default class Bot {
           prefix: 'Hurt/HitCombo/',
           suffix: '.png'
         }),
-        frameRate: 10
+        frameRate: 7
       })
       this.scene.anims.create({
         key:'Lose',
@@ -85,7 +85,7 @@ export default class Bot {
 
     updateHealth() {
       if (this.health > 0) {
-       this.health = this.health - 0.1
+       this.health = this.health - 0.3
       }
 
       if (this.health < 1 && this.health > 0) {

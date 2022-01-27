@@ -41,10 +41,8 @@ export default class Player {
     if (this.flip) {
       this.fighter.flipX = true;
     }
-    this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
-    // fighter.setGravity(1000)
+    this.fighter.body.setSize(30, 30, true).setOffset(15, 30)
 
-    // this.scene.physics.world.disable(this.fighter)
     this.fighter.class = this
     this.fighter.refreshBody()
 
@@ -162,7 +160,7 @@ export default class Player {
 
     this.fighter.on('animationcomplete', () => {
       this.fighterCombo = '1'
-      this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+      this.fighter.body.setSize(30, 30, true).setOffset(15, 20)
     })
   }
 
@@ -184,7 +182,7 @@ export default class Player {
         this.fighter.setCircle(10).setOffset(60,30)
       }
       if (frames.index === 6) {
-        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 20)
       }
     })
 
@@ -204,13 +202,16 @@ export default class Player {
         this.fighter.setCircle(10).setOffset(90,15)
       }
       if (frames.index === 8) {
-        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 20)
       }
     })
 
     this.fighter.once('animationcomplete', ()=> {
       this.fighterCombo = ''
       this.knockDown = false;
+      this.scene.time.addEvent({
+        delay: 1000
+      })
     })
   }
 
@@ -251,7 +252,7 @@ export default class Player {
       }  else {
         this.fighter.setVelocityX(0);
         this.fighter.setVelocityY(0);
-        this.fighter.body.setSize(30, 30, true).setOffset(15, 80)
+        this.fighter.body.setSize(30, 30, true).setOffset(15, 20)
         !this.scene.isPlaying && this.fighter.anims.play('Idle', true)
       }
   }
