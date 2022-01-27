@@ -37,7 +37,7 @@ export default class Bot {
       bot.body.setOffset(12, 5)
 
       this.bot = bot
-      
+
       this.scene.fighters.add(bot)
     }
 
@@ -54,6 +54,26 @@ export default class Bot {
         }),
         frameRate: 10,
         repeat: -1
+      })
+      this.scene.anims.create({
+        key: 'Hurt1',
+        frames: this.scene.anims.generateFrameNames('fighter', {
+          start: 1,
+          end: 5,
+          prefix: 'Hurt/HitOnce/',
+          suffix: '.png'
+        }),
+        frameRate: 10
+      })
+      this.scene.anims.create({
+        key:'HurtCombo',
+        frames: this.scene.anims.generateFrameNames('fighter', {
+          start:1,
+          end: 18,
+          prefix: 'Hurt/HitCombo/',
+          suffix: '.png'
+        }),
+        frameRate:18
       })
     }
 

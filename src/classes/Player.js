@@ -120,6 +120,27 @@ export default class Player {
       }),
       frameRate: 12
     })
+    this.scene.anims.create({
+      key: 'Hit2',
+      frames: this.scene.anims.generateFrameNames('fighter', {
+        start: 1,
+        end: 8,
+        prefix: 'Moveset/Hit2/',
+        suffix: '.png'
+      }),
+      frameRate: 1
+    })
+    this.scene.anims.create({
+      key: 'Hit3',
+      frames:this.scene.anims.generateFrameNames('fighter', {
+        start: 1,
+        end: 16,
+        prefix: 'Moveset/Hit3/',
+        suffix: '.png'
+      }),
+      frameRate: 16
+    })
+
   }
 
   playerControl() {
